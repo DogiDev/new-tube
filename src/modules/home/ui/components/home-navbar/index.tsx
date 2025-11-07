@@ -24,11 +24,11 @@ export const HomeNavBar = () => {
 
         {/* Search bar*/}
         <div className="flex-1 flex justify-center max-w-[720px] mx-auto">
-            <SearchInput />
+          <SearchInput />
         </div>
 
         <div className="flex-shrink-0 items-center flex gap-4">
-            <AuthButton />
+          <AuthButton />
         </div>
       </div>
     </nav>
