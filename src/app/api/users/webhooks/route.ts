@@ -16,13 +16,13 @@ export async function POST(req: Request) {
   }
 
   // Create new Svix instance with secret
-  const wh = new Webhook(SIGNIN_SECRET);
+  const svix = new Webhook(SIGNIN_SECRET);
 
   // Get headers
   const headerPayload = await headers();
-  const svix_id = headerPayload.get("svix_id");
-  const svix_timestamp = headerPayload.get("svix_timestamp");
-  const svix_signature = headerPayload.get("svix_signature");
+  const svix_id = headerPayload.get("svix-id");
+  const svix_timestamp = headerPayload.get("svix-timestamp");
+  const svix_signature = headerPayload.get("svix-signature");
 
   // if there are no headers, error out
   if (!svix_id || !svix_timestamp || !svix_signature) {
@@ -39,11 +39,17 @@ export async function POST(req: Request) {
 
   // Verify payload with headers
   try {
-    evt = wh.verify(body, {
-      "svix-id": svix_id,
-      "svix-timestamp": svix_timestamp,
-      "svix-signature": svix_signature,
-    }) as WebhookEvent;
+    const verified = svix.verify(body, {
+      'svix-id': svix_id,
+      'svix-timestamp': svix_timestamp,
+      'svix-signature': svix_signature,
+    });
+
+    // svix.verify may return a JSON string or an already-parsed object.
+    evt =
+      typeof verified === "string"
+        ? (JSON.parse(verified) as WebhookEvent)
+        : (verified as WebhookEvent);
   } catch (err) {
     console.error("Error: Could not verify webhook:", err);
     return new Response("Error: Verification error", {
@@ -51,9 +57,7 @@ export async function POST(req: Request) {
     });
   }
 
-  const eventType = evt.type;
-
-  if (eventType === "user.created") {
+  if (evt.type === "user.created") {
     const { data } = evt;
 
     await db.insert(users).values({
@@ -63,7 +67,7 @@ export async function POST(req: Request) {
     });
   }
 
-  if (eventType === "user.deleted") {
+  if (evt.type === "user.deleted") {
     const { data } = evt;
 
     if (!data.id) {
@@ -73,7 +77,7 @@ export async function POST(req: Request) {
     await db.delete(users).where(eq(users.clerkId, data.id));
   }
 
-  if (eventType === "user.updated") {
+  if (evt.type === "user.updated") {
     const { data } = evt;
 
     await db
