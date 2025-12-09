@@ -57,7 +57,9 @@ export async function POST(req: Request) {
     });
   }
 
-  if (evt.type === "user.created") {
+  const eventType = evt.type
+
+  if (eventType === "user.created") {
     const { data } = evt;
 
     await db.insert(users).values({
@@ -67,7 +69,7 @@ export async function POST(req: Request) {
     });
   }
 
-  if (evt.type === "user.deleted") {
+  if (eventType === "user.deleted") {
     const { data } = evt;
 
     if (!data.id) {
@@ -77,7 +79,7 @@ export async function POST(req: Request) {
     await db.delete(users).where(eq(users.clerkId, data.id));
   }
 
-  if (evt.type === "user.updated") {
+  if (eventType === "user.updated") {
     const { data } = evt;
 
     await db
