@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev:all": "concurrently \"bun run dev:webhook\" \"bun run dev\" ",
-    "dev:webhook": "ngrok http --url=spissatus-pearlie-vowely.ngrok-free.dev 3000",
+    "dev:webhook": "\"C:\\Program Files\\ngrok\\ngrok.exe\" http --url=spissatus-pearlie-vowely.ngrok-free.dev 3000",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
