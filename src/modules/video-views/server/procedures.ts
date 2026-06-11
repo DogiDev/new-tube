@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -8,7 +8,7 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 export const videoViewsRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ videoId: z.string().uuid() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { videoId } = input;
       const { id: userId } = ctx.user;
 

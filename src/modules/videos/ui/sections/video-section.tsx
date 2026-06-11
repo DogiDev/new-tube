@@ -1,6 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
+import { useAuth } from "@clerk/nextjs";
 import { ErrorBoundary } from "react-error-boundary";
 
 import { cn } from "@/lib/utils";
@@ -9,7 +10,6 @@ import { trpc } from "@/trpc/client";
 import { VideoPlayer } from "../components/video-player";
 import { VideoBanner } from "../components/video-banner";
 import { VideoTopRow } from "../components/video-top-row";
-import { useAuth } from "@clerk/nextjs";
 
 interface VideoSectionProps {
   videoId: string;

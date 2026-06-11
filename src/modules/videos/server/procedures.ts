@@ -7,17 +7,17 @@ import { mux } from "@/lib/mux";
 import { TRPCError } from "@trpc/server";
 import { workflow } from "@/lib/workflow";
 import {
+  baseProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+} from "@/trpc/init";
+import {
   users,
   videoReactions,
   videos,
   videoUpdateSchema,
   videoViews,
 } from "@/db/schema";
-import {
-  baseProcedure,
-  createTRPCRouter,
-  protectedProcedure,
-} from "@/trpc/init";
 
 export const videosRouter = createTRPCRouter({
   getOne: baseProcedure
@@ -73,8 +73,12 @@ export const videosRouter = createTRPCRouter({
         .from(videos)
         .innerJoin(users, eq(videos.userId, users.id))
         .leftJoin(viewerReactions, eq(viewerReactions.videoId, videos.id))
-        .where(eq(videos.id, input.id))
-        .groupBy(videos.id, users.id, viewerReactions.type);
+        .where(eq(videos.id, input.id));
+      // .groupBy(
+      //   videos.id,
+      //   users.id,
+      //   viewerReactions.type,
+      // )
 
       if (!existingVideo) {
         throw new TRPCError({ code: "NOT_FOUND" });

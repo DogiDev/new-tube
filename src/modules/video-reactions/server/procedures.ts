@@ -1,4 +1,4 @@
-import z from "zod";
+import { z } from "zod";
 import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -8,11 +8,11 @@ import { createTRPCRouter, protectedProcedure } from "@/trpc/init";
 export const videoReactionsRouter = createTRPCRouter({
   like: protectedProcedure
     .input(z.object({ videoId: z.string().uuid() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { videoId } = input;
       const { id: userId } = ctx.user;
 
-      const [existingVideoReaction] = await db
+      const [existingVideoReactionLike] = await db
         .select()
         .from(videoReactions)
         .where(
@@ -23,8 +23,8 @@ export const videoReactionsRouter = createTRPCRouter({
           ),
         );
 
-      if (existingVideoReaction) {
-        const [deletedVideoReaction] = await db
+      if (existingVideoReactionLike) {
+        const [deletedViewerReaction] = await db
           .delete(videoReactions)
           .where(
             and(
@@ -34,7 +34,7 @@ export const videoReactionsRouter = createTRPCRouter({
           )
           .returning();
 
-        return deletedVideoReaction;
+        return deletedViewerReaction;
       }
 
       const [createdVideoReaction] = await db
@@ -52,11 +52,11 @@ export const videoReactionsRouter = createTRPCRouter({
     }),
   dislike: protectedProcedure
     .input(z.object({ videoId: z.string().uuid() }))
-    .mutation(async ({ ctx, input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { videoId } = input;
       const { id: userId } = ctx.user;
 
-      const [existingVideoReaction] = await db
+      const [existingVideoReactionDislike] = await db
         .select()
         .from(videoReactions)
         .where(
@@ -67,8 +67,8 @@ export const videoReactionsRouter = createTRPCRouter({
           ),
         );
 
-      if (existingVideoReaction) {
-        const [deletedVideoReaction] = await db
+      if (existingVideoReactionDislike) {
+        const [deletedViewerReaction] = await db
           .delete(videoReactions)
           .where(
             and(
@@ -78,7 +78,7 @@ export const videoReactionsRouter = createTRPCRouter({
           )
           .returning();
 
-        return deletedVideoReaction;
+        return deletedViewerReaction;
       }
 
       const [createdVideoReaction] = await db
